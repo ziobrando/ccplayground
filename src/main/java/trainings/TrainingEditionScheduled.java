@@ -3,10 +3,6 @@ package trainings;
 import java.time.LocalDate;
 import java.util.UUID;
 
-
-/**
- * @DomainEvent just in case-
- */
 public class TrainingEditionScheduled {
 
     private final UUID trainingId;

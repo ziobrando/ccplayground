@@ -2,12 +2,16 @@ package trainings;
 
 import java.util.Objects;
 
+/**
+ * Probably too early to say whether we need a ValueObject for a Participant
+ * but, nothing wrong in making it immutable.
+ */
 public class Participant {
     private final String firstName;
     private final String familyName;
     private final String email;
 
-    public Participant(String firstName, String familyName, String email) {
+    Participant(String firstName, String familyName, String email) {
         this.firstName = firstName;
         this.familyName = familyName;
         this.email = email;
