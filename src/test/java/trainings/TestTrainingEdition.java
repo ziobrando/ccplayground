@@ -61,11 +61,35 @@ class TestTrainingEdition {
                 new Participant("Mario", "Rossi", "mario.rossi@azienda.it"),
                 new Participant("Giorgio", "Paletta", "giorgio.paletta@azienda.it")
         };
-        PlaceReservation placeReservation = PlaceReservation.forMany(trainingId, participants);
+        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, participants);
+        ReservationPlaced groupReservationPlaced = new ReservationPlaced(trainingId, participants, capacity - 2);
+
+        fixture.given(trainingEditionScheduled)
+                .when(placeGroupReservation)
+                .expectEvents(groupReservationPlaced);
     }
 
     @Test
     public void cannotExceedCapacity() {
+
+        TrainingEditionScheduled smallTrainingEditionScheduled = new TrainingEditionScheduled(
+                trainingId, 4, "Small", LocalDate.now().plusMonths(4), 2);
+        Participant[] manyParticipants = {
+                new Participant("First", "Attendee", "first.attendee@company.com"),
+                new Participant("Second", "Attendee", "second.attendee@company.com"),
+                new Participant("Third", "Attendee", "third.attendee@company.com")
+        };
+        Participant[] participants = {
+                new Participant("Mario", "Rossi", "mario.rossi@azienda.it"),
+                new Participant("Giorgio", "Paletta", "giorgio.paletta@azienda.it")
+        };
+        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, participants);
+        ReservationPlaced largeReservationPlaced = new ReservationPlaced(trainingId, manyParticipants, 1);
+
+        fixture.given(smallTrainingEditionScheduled)
+                .andGiven(largeReservationPlaced)
+                .when(placeGroupReservation)
+                .expectException(AvailableCapacityExceeded.class);
 
     }
 

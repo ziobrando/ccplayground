@@ -32,6 +32,10 @@ public class TrainingEdition {
     @CommandHandler
     public void placeReservation(PlaceReservation command) {
 
+        if (availability < command.getSeats()) {
+            throw new AvailableCapacityExceeded("Reservation exceeding current capacity");
+        }
+
         apply(new ReservationPlaced(
                 command.getTrainingId(),
                 command.getParticipants(),
@@ -43,6 +47,11 @@ public class TrainingEdition {
     public void on(TrainingEditionScheduled event) {
         this.trainingId = event.getTrainingId();
         this.availability = event.getCapacity();
+    }
+
+    @EventHandler
+    public void on(ReservationPlaced event) {
+        this.availability = event.getResultingAvailability();
     }
 
 
