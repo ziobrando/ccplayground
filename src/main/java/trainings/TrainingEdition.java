@@ -47,7 +47,7 @@ public class TrainingEdition {
 
     @CommandHandler
     public void cancelReservation(CancelReservation command) {
-        if (reservations.containsKey(command.getReservationId())) {
+        if (!reservations.containsKey(command.getReservationId())) {
             throw new RuntimeException("no reservation found with id: " + command.getReservationId());
         } else {
             Reservation reservation = reservations.get(command.getReservationId());
