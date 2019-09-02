@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class ReservationPlaced {
     private final UUID trainingId;
+    private final ReservationId reservationId;
     private final Participant[] participants;
     private final int resultingAvailability;
 
@@ -26,8 +27,9 @@ public class ReservationPlaced {
         return result;
     }
 
-    public ReservationPlaced(UUID trainingId, Participant[] participants, int resultingAvailability) {
+    public ReservationPlaced(UUID trainingId, ReservationId reservationId, Participant[] participants, int resultingAvailability) {
         this.trainingId = trainingId;
+        this.reservationId = reservationId;
         this.participants = participants;
         this.resultingAvailability = resultingAvailability;
     }
@@ -38,5 +40,17 @@ public class ReservationPlaced {
 
     public int getResultingAvailability() {
         return resultingAvailability;
+    }
+
+    public ReservationId getReservationId() {
+        return reservationId;
+    }
+
+    /**
+     * The number of seats involved in the current reservation.
+     * @return the number of seats.
+     */
+    int getSeats() {
+        return participants.length;
     }
 }

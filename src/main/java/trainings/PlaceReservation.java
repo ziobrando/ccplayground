@@ -10,28 +10,31 @@ class PlaceReservation {
 
     @TargetAggregateIdentifier
     private UUID trainingId;
+    private ReservationId reservationId;
     private Participant[] participants;
 
-    private PlaceReservation(UUID trainingId, Participant[] participants) {
+    private PlaceReservation(UUID trainingId, ReservationId reservationId, Participant[] participants) {
         this.trainingId = trainingId;
+        this.reservationId = reservationId;
         this.participants = participants;
     }
 
     /**
      * A factory method to create a reservation for a simple participant. Sounded a little better than new.
      * @param trainingId
+     * @param reservationId the unique id for this specific reservation.
      * @param name
      * @param surname
      * @param email
      * @return
      */
-    static PlaceReservation forOne(UUID trainingId, String name, String surname, String email) {
+    static PlaceReservation forOne(UUID trainingId, ReservationId reservationId, String name, String surname, String email) {
         Participant[] list = { new Participant(name, surname, email)};
-        return new PlaceReservation(trainingId, list);
+        return new PlaceReservation(trainingId, reservationId, list);
     }
 
-    static PlaceReservation forMany(UUID trainingId, Participant[] participants) {
-        return new PlaceReservation(trainingId, participants);
+    static PlaceReservation forMany(UUID trainingId, ReservationId reservationId, Participant[] participants) {
+        return new PlaceReservation(trainingId, reservationId, participants);
     }
 
     UUID getTrainingId() {
@@ -45,6 +48,8 @@ class PlaceReservation {
     Participant[] getParticipants() {
         return participants;
     }
+
+    ReservationId getReservationId() { return reservationId; }
 
     @Override
     public boolean equals(Object o) {

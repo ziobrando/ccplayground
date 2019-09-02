@@ -12,10 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestPlaceReservation {
 
     private UUID trainingId;
+    private ReservationId reservationId;
 
     @BeforeEach
     void setUp() {
         trainingId = UUID.randomUUID();
+        reservationId = ReservationId.generateNew();
     }
 
     @Test
@@ -25,7 +27,7 @@ public class TestPlaceReservation {
         String surname = "surname";
         String email = "name.surname@azienda.it";
 
-        PlaceReservation single = PlaceReservation.forOne(trainingId, name, surname, email);
+        PlaceReservation single = PlaceReservation.forOne(trainingId, reservationId, name, surname, email);
 
         assertEquals(1, single.getSeats());
     }
@@ -39,15 +41,15 @@ public class TestPlaceReservation {
                 new Participant("Giorgio", "Paletta", "giorgio.paletta@email.com")
         };
 
-        PlaceReservation group = PlaceReservation.forMany(trainingId, participants);
+        PlaceReservation group = PlaceReservation.forMany(trainingId, reservationId, participants);
         assertEquals(participants.length, group.getSeats());
     }
 
     @Test
     @DisplayName("Equals works as expected")
     void testEquals() {
-        PlaceReservation single = PlaceReservation.forOne(trainingId, "Gino", "Pilotino", "gino.pilotino@gmail.com");
-        PlaceReservation other = PlaceReservation.forOne(trainingId, "Gino", "Pilotino", "gino.pilotino@gmail.com");
+        PlaceReservation single = PlaceReservation.forOne(trainingId, reservationId,  "Gino", "Pilotino", "gino.pilotino@gmail.com");
+        PlaceReservation other = PlaceReservation.forOne(trainingId, reservationId, "Gino", "Pilotino", "gino.pilotino@gmail.com");
 
         assertEquals(single, other);
     }

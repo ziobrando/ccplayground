@@ -6,8 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 class TestTrainingEdition {
@@ -17,6 +15,7 @@ class TestTrainingEdition {
     private UUID trainingId;
     private TrainingEditionScheduled trainingEditionScheduled;
     private ScheduleTraining scheduleTraining;
+    private ReservationId reservationId;
 
     @BeforeEach
     void setUp() {
@@ -29,6 +28,7 @@ class TestTrainingEdition {
 
         trainingEditionScheduled = new TrainingEditionScheduled(trainingId, capacity, title, date, duration);
         scheduleTraining = new ScheduleTraining(trainingId, capacity, title, date, duration);
+        reservationId = ReservationId.generateNew();
     }
 
     @Test
@@ -46,9 +46,9 @@ class TestTrainingEdition {
         String lastName = "lastName";
         String email = firstName + "." + lastName + "@testcompany.com";
 
-        PlaceReservation placeReservation = PlaceReservation.forOne(trainingId, firstName, lastName, email);
+        PlaceReservation placeReservation = PlaceReservation.forOne(trainingId, reservationId, firstName, lastName, email);
         Participant[] participants = { new Participant(firstName, lastName, email)};
-        ReservationPlaced reservationPlaced = new ReservationPlaced(trainingId, participants, capacity - 1);
+        ReservationPlaced reservationPlaced = new ReservationPlaced(trainingId, reservationId, participants, capacity - 1);
 
         fixture.given(trainingEditionScheduled)
                 .when(placeReservation)
@@ -61,8 +61,8 @@ class TestTrainingEdition {
                 new Participant("Mario", "Rossi", "mario.rossi@azienda.it"),
                 new Participant("Giorgio", "Paletta", "giorgio.paletta@azienda.it")
         };
-        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, participants);
-        ReservationPlaced groupReservationPlaced = new ReservationPlaced(trainingId, participants, capacity - 2);
+        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, reservationId, participants);
+        ReservationPlaced groupReservationPlaced = new ReservationPlaced(trainingId, reservationId, participants, capacity - 2);
 
         fixture.given(trainingEditionScheduled)
                 .when(placeGroupReservation)
@@ -70,7 +70,8 @@ class TestTrainingEdition {
     }
 
     @Test
-    public void cannotExceedCapacity() {
+    @DisplayName("Will throw an exception when if there's not enough capacity.")
+    void cannotExceedCapacity() {
 
         TrainingEditionScheduled smallTrainingEditionScheduled = new TrainingEditionScheduled(
                 trainingId, 4, "Small", LocalDate.now().plusMonths(4), 2);
@@ -83,14 +84,30 @@ class TestTrainingEdition {
                 new Participant("Mario", "Rossi", "mario.rossi@azienda.it"),
                 new Participant("Giorgio", "Paletta", "giorgio.paletta@azienda.it")
         };
-        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, participants);
-        ReservationPlaced largeReservationPlaced = new ReservationPlaced(trainingId, manyParticipants, 1);
+        PlaceReservation placeGroupReservation = PlaceReservation.forMany(trainingId, reservationId, participants);
+        ReservationPlaced largeReservationPlaced = new ReservationPlaced(trainingId, reservationId, manyParticipants, 1);
 
         fixture.given(smallTrainingEditionScheduled)
                 .andGiven(largeReservationPlaced)
                 .when(placeGroupReservation)
                 .expectException(AvailableCapacityExceeded.class);
 
+    }
+
+    @Test
+    @DisplayName("Can cancel a reservation")
+    void canCancelAReservation() {
+
+        int resultingCapacity = trainingEditionScheduled.getCapacity();
+        Participant[] participants = {new Participant("Random", "Dude", "random.dude@gmail.com")};
+        // TODO: Builder.Participant.arrayOf(2)
+        ReservationPlaced reservationPlaced = new ReservationPlaced(trainingId, reservationId, participants, 19); // TODO coupling
+        TrainingEditionReservationCanceled reservationCanceled = new TrainingEditionReservationCanceled(reservationId, trainingId, resultingCapacity);
+        CancelReservation cancelReservation = new CancelReservation(reservationId, trainingId);
+
+        fixture.given(trainingEditionScheduled, reservationPlaced)
+                .when(cancelReservation)
+                .expectEvents(reservationCanceled);
     }
 
 }
