@@ -6,12 +6,24 @@ class TrainingEditionReservationCanceled {
 
     private final ReservationId reservationId;
     private final UUID trainingId;
-    private final int resultingCapacity;
+    private final int resultingAvailability;
 
-    public TrainingEditionReservationCanceled(ReservationId reservationId, UUID trainingId, int resultingCapacity) {
+    public TrainingEditionReservationCanceled(ReservationId reservationId, UUID trainingId, int resultingAvailability) {
 
         this.reservationId = reservationId;
         this.trainingId = trainingId;
-        this.resultingCapacity = resultingCapacity;
+        this.resultingAvailability = resultingAvailability;
+    }
+
+    ReservationId getReservationId() {
+        return reservationId;
+    }
+
+    public UUID getTrainingId() {
+        return trainingId;
+    }
+
+    int getResultingAvailability() {
+        return resultingAvailability;
     }
 }

@@ -110,4 +110,21 @@ class TestTrainingEdition {
                 .expectEvents(reservationCanceled);
     }
 
+    @Test
+    @DisplayName("Can't cancel a reservation twice")
+    void cantCancelTwice() {
+
+        int resultingCapacity = trainingEditionScheduled.getCapacity();
+        Participant[] participants = {new Participant("Random", "Dude", "random.dude@gmail.com")};
+
+        ReservationPlaced reservationPlaced = new ReservationPlaced(trainingId, reservationId, participants, 19); // TODO coupling
+        TrainingEditionReservationCanceled reservationCanceled = new TrainingEditionReservationCanceled(reservationId, trainingId, resultingCapacity);
+        CancelReservation cancelReservation = new CancelReservation(reservationId, trainingId);
+
+        fixture.given(trainingEditionScheduled, reservationPlaced, reservationCanceled)
+                .when(cancelReservation)
+                .expectException(RuntimeException.class);
+
+    }
+
 }

@@ -3,6 +3,7 @@ package trainings;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventsourcing.EventSourcingHandler;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -59,19 +60,30 @@ public class TrainingEdition {
         }
     }
 
-    @EventHandler
+    @EventSourcingHandler
     public void on(TrainingEditionScheduled event) {
         this.trainingId = event.getTrainingId();
         this.availability = event.getCapacity();
     }
 
-    @EventHandler
+    @EventSourcingHandler
     public void on(ReservationPlaced event) {
         this.availability = event.getResultingAvailability();
         this.reservations.put(event.getReservationId(), new Reservation(event.getReservationId(), event.getSeats()));
     }
 
+    @EventSourcingHandler
+    public void on(TrainingEditionReservationCanceled event) {
+        this.availability = event.getResultingAvailability();
+        this.reservations.remove(event.getReservationId());
 
+    }
+
+
+    /**
+     * Not yet sure whether I need this class.
+     * It's just a local way to store the Reservation information.
+     */
     private class Reservation {
         private ReservationId id;
         private int seats;
